@@ -26,11 +26,19 @@ This project demonstrates the deployment of InfluxDB, OwnCloud, Grafana, and Tel
 
 ### Setup Instructions
 
-#### Step 1: Clone the Repository
+#### Step : Clone the Repository
 
 ```sh
 git clone https://github.com/Kstavr/pms-18.git
 cd psm-18
+
+Step 1: Installation of docker and Docker compose
+•	sudo apt install -y docker.io
+•	sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+systemctl enable docker
+systemctl start docker
+
 
 Step 2: Create and Configure docker-compose.yml
 The docker-compose.yml file defines the services for InfluxDB, OwnCloud, Grafana.
@@ -78,6 +86,8 @@ echo "deb https://repos.influxdata.com/ubuntu ${DISTRIB_CODENAME} stable" | sudo
 sudo apt update
 sudo apt install telegraf -y
 
+systemctl enable telegraf
+systemctl start telegraf
 
 Step 3: Configure Telegraf
 Create a configuration file for Telegraf (telegraf/telegraf.conf)
