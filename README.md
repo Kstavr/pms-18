@@ -130,6 +130,16 @@ InfluxDB: Open a browser and navigate to http://localhost:8086.
 OwnCloud: Open a browser and navigate to http://localhost:8080.
 Grafana: Open a browser and navigate to http://localhost:3000.
 
+Step 6: Configure Grafana
+Log in to Grafana (admin/admin).
+
+Add InfluxDB as a data source:
+
+URL: http://influxdb:8086
+Database: telegraf
+User: admin
+Password: adminpass
+Create dashboards to visualize metrics collected by Telegraf.
 
 Conclusion
 This setup dockerizes InfluxDB, OwnCloud, Grafana, and Telegraf, allowing for easy deployment and management of these services. Telegraf collects metrics from Docker and stores them in InfluxDB, which can then be visualized using Grafana.
