@@ -33,10 +33,85 @@ git clone https://github.com/Kstavr/pms-18.git
 cd psm-18
 
 Step 2: Create and Configure docker-compose.yml
-The docker-compose.yml file defines the services for InfluxDB, OwnCloud, Grafana, and Telegraf.
+The docker-compose.yml file defines the services for InfluxDB, OwnCloud, Grafana.
+version: '3.8'
+
+services:
+  owncloud:
+    image: owncloud/server
+    ports:
+      - "8080:8080"
+    volumes:
+      - owncloud_data:/mnt/data
+    restart: always
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    restart: always
+
+  influxdb:
+    image: influxdb:2.7
+    ports:
+      - "8086:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=adminpass
+      - DOCKER_INFLUXDB_INIT_ORG=myorg
+      - DOCKER_INFLUXDB_INIT_BUCKET=telegraf
+      - DOCKER_INFLUXDB_INIT_RETENTION=0
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=mytoken
+    restart: always
+
+volumes:
+  owncloud_data:
+  influxdb_data:
+
+
+
+Install Telegraf native:
+wget -qO- https://repos.influxdata.com/influxdb.key | sudo apt-key add -
+source /etc/lsb-release
+echo "deb https://repos.influxdata.com/ubuntu ${DISTRIB_CODENAME} stable" | sudo tee /etc/apt/sources.list.d/influxdb.list
+sudo apt update
+sudo apt install telegraf -y
+
 
 Step 3: Configure Telegraf
 Create a configuration file for Telegraf (telegraf/telegraf.conf)
+[global_tags]
+
+[agent]
+  interval = "10s"
+  round_interval = true
+  metric_batch_size = 1000
+  metric_buffer_limit = 10000
+  collection_jitter = "0s"
+  flush_interval = "10s"
+  flush_jitter = "0s"
+  precision = ""
+  hostname = ""
+  omit_hostname = false
+
+[[outputs.influxdb]]
+  urls = ["http://localhost:8086"]
+  database = "telegraf"
+  username = "admin"
+  password = "adminpass"
+  skip_database_creation = false
+
+[[inputs.docker]]
+  endpoint = "unix:///var/run/docker.sock"
+  gather_services = false
+  container_names = []
+  timeout = "5s"
+  perdevice = true
+  total = true
+  docker_label_include = []
+  docker_label_exclude = []
+
 
 Step 4: Start the Services with the commmand: docker-compose up -d
 
